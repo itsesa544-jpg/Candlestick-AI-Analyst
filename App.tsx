@@ -60,7 +60,7 @@ function App() {
   const renderContent = () => {
     switch (appState) {
       case 'landing':
-        return <LandingScreen onStartStatic={() => setAppState('camera')} onStartLive={() => {}} />;
+        return <LandingScreen onStartStatic={() => setAppState('camera')} />;
       case 'camera':
         return <CameraView onAnalyze={handleAnalyze} onBack={handleBackToLanding} />;
       case 'analyzing':
@@ -81,7 +81,7 @@ function App() {
           />
         );
       default:
-        return <LandingScreen onStartStatic={() => setAppState('camera')} onStartLive={() => {}} />;
+        return <LandingScreen onStartStatic={() => setAppState('camera')} />;
     }
   };
 

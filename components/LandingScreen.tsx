@@ -1,9 +1,8 @@
 import React from 'react';
-import { CameraIcon, UploadIcon } from './IconComponents';
+import { UploadIcon } from './IconComponents';
 
 interface LandingScreenProps {
   onStartStatic: () => void;
-  onStartLive: () => void; // Assuming there might be a live analysis mode
 }
 
 export const LandingScreen: React.FC<LandingScreenProps> = ({ onStartStatic }) => {
@@ -15,11 +14,11 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ onStartStatic }) =
         </h1>
         <p className="mt-4 text-lg text-gray-300">
           Leverage the power of Gemini to get real-time technical analysis of any trading chart.
-          Upload a screenshot or use your camera to capture a chart, and our AI will provide insights on market direction, confidence levels, and key patterns.
+          Upload a screenshot of a chart, and our AI will provide insights on market direction, confidence levels, and key patterns.
         </p>
       </div>
 
-      <div className="mt-12 flex flex-col sm:flex-row gap-6">
+      <div className="mt-12 flex justify-center">
         <button
           onClick={onStartStatic}
           className="group flex flex-col items-center justify-center w-64 h-48 p-6 bg-gray-800 rounded-xl border-2 border-transparent hover:border-cyan-500 hover:bg-gray-700 transition-all duration-300"
@@ -28,20 +27,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ onStartStatic }) =
             <UploadIcon className="w-10 h-10 text-cyan-300 group-hover:text-white" />
           </div>
           <h2 className="mt-4 text-xl font-semibold">Analyze Chart Image</h2>
-          <p className="mt-1 text-sm text-gray-400">Upload or capture a screenshot</p>
-        </button>
-        
-        {/* Placeholder for Live Analysis feature */}
-        <button
-          disabled
-          title="Coming Soon"
-          className="group flex flex-col items-center justify-center w-64 h-48 p-6 bg-gray-800 rounded-xl border-2 border-transparent cursor-not-allowed opacity-50"
-        >
-          <div className="flex items-center justify-center w-20 h-20 bg-gray-700 rounded-full">
-            <CameraIcon className="w-10 h-10 text-cyan-300" />
-          </div>
-          <h2 className="mt-4 text-xl font-semibold">Live Analysis</h2>
-          <p className="mt-1 text-sm text-gray-400">From your camera feed (Soon)</p>
+          <p className="mt-1 text-sm text-gray-400">Upload a screenshot</p>
         </button>
       </div>
        <div className="absolute bottom-4 text-center text-xs text-gray-500">

@@ -1,7 +1,6 @@
-import React, { useRef, useState, useCallback, ChangeEvent } from 'react';
-import Webcam from 'react-webcam';
+import React, { useRef, useState, ChangeEvent } from 'react';
 import { ChartTimeframe, TradingPlatform } from '../types';
-import { BackIcon, CameraIcon, UploadIcon } from './IconComponents';
+import { BackIcon, UploadIcon } from './IconComponents';
 
 interface CameraViewProps {
   onAnalyze: (
@@ -12,28 +11,11 @@ interface CameraViewProps {
   onBack: () => void;
 }
 
-const videoConstraints = {
-  width: 1280,
-  height: 720,
-  facingMode: 'user', // Default to front camera, more common for desktop
-};
-
 export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onBack }) => {
-  const webcamRef = useRef<Webcam>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [platform, setPlatform] = useState<TradingPlatform>('General');
   const [timeframe, setTimeframe] = useState<ChartTimeframe>('5m');
   const [error, setError] = useState<string | null>(null);
-  const [isCameraOn, setIsCameraOn] = useState(false);
-
-  const capture = useCallback(async () => {
-    const imageSrc = webcamRef.current?.getScreenshot();
-    if (imageSrc) {
-      const blob = await fetch(imageSrc).then((res) => res.blob());
-      const file = new File([blob], 'capture.jpeg', { type: 'image/jpeg' });
-      onAnalyze(file, platform, timeframe);
-    }
-  }, [webcamRef, onAnalyze, platform, timeframe]);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -51,15 +33,6 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onBack }) => 
     fileInputRef.current?.click();
   };
 
-  const handleCameraAction = () => {
-    if (isCameraOn) {
-      capture();
-    } else {
-      setError(null);
-      setIsCameraOn(true);
-    }
-  };
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4 sm:p-6 relative">
         <button
@@ -74,11 +47,11 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onBack }) => 
             AI<span className="text-cyan-400"> Trading</span> Analyst
             </h1>
             <p className="mt-4 text-md text-gray-300">
-            Get instant technical analysis of any trading chart. Select the platform and timeframe, then upload a screenshot or use your camera to capture a chart.
+            Get instant technical analysis. Select the platform and timeframe, then upload a screenshot of a chart.
             </p>
         </div>
 
-        <div className="mt-8 p-6 bg-gray-800/50 rounded-xl border border-gray-700 w-full max-w-3xl">
+        <div className="mt-8 p-6 bg-gray-800/50 rounded-xl border border-gray-700 w-full max-w-lg">
             <h2 className="text-xl font-bold mb-4 text-center text-cyan-300">1. Chart Settings</h2>
             {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -105,66 +78,19 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onBack }) => 
             </div>
         </div>
 
-        <div className="mt-6 w-full max-w-3xl">
-            <h2 className="text-xl font-bold mb-4 text-center text-cyan-300">2. Provide Chart Image</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                {/* Camera Capture */}
-                <div className="flex flex-col items-center p-4 bg-gray-800/50 rounded-xl border border-gray-700">
-                    <div className="w-full aspect-video bg-black rounded-lg overflow-hidden relative flex items-center justify-center">
-                        {isCameraOn ? (
-                            <Webcam
-                                audio={false}
-                                ref={webcamRef}
-                                screenshotFormat="image/jpeg"
-                                videoConstraints={videoConstraints}
-                                className="w-full h-full object-cover"
-                                onUserMediaError={(err) => {
-                                  console.error('onUserMediaError:', err);
-                                  // The err object is a DOMException.
-                                  if (err instanceof DOMException) {
-                                      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                                          setError('Camera permission was denied. Please allow camera access in your browser settings to use this feature.');
-                                      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-                                          setError('No camera found. Please ensure a camera is connected and enabled.');
-                                      } else {
-                                           setError(`Could not access camera: ${err.message}. Please check permissions and ensure it is not in use by another application.`);
-                                      }
-                                  } else {
-                                      setError('An unknown error occurred while trying to access the camera.');
-                                  }
-                                  setIsCameraOn(false);
-                                }}
-                            />
-                        ) : (
-                            <div className="text-center text-gray-400 p-4">
-                                <CameraIcon className="w-16 h-16 mx-auto opacity-50" />
-                                <p className="mt-2 text-sm">Click "Start Camera" to activate your webcam.</p>
-                            </div>
-                        )}
-                    </div>
-                    <button
-                        onClick={handleCameraAction}
-                        className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition"
-                        aria-label={isCameraOn ? "Capture image" : "Start camera"}
-                    >
-                        <CameraIcon className="w-6 h-6"/>
-                        <span>{isCameraOn ? 'Capture' : 'Start Camera'}</span>
-                    </button>
-                </div>
-                
-                {/* File Upload */}
-                <div className="flex flex-col items-center justify-center h-full p-4 bg-gray-800/50 rounded-xl border border-gray-700">
-                     <p className="text-center text-gray-400 mb-4">Or upload an image file</p>
-                    <button
-                        onClick={triggerFileUpload}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition"
-                        aria-label="Upload image"
-                    >
-                        <UploadIcon className="w-6 h-6"/>
-                        <span>Upload Image</span>
-                    </button>
-                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
-                </div>
+        <div className="mt-6 w-full max-w-lg">
+            <h2 className="text-xl font-bold mb-4 text-center text-cyan-300">2. Upload Chart Image</h2>
+            <div className="flex flex-col items-center justify-center h-full p-6 bg-gray-800/50 rounded-xl border border-gray-700">
+                <p className="text-center text-gray-400 mb-4">Select an image file from your device.</p>
+                <button
+                    onClick={triggerFileUpload}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition"
+                    aria-label="Upload image"
+                >
+                    <UploadIcon className="w-6 h-6"/>
+                    <span>Upload Image</span>
+                </button>
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
             </div>
         </div>
 
