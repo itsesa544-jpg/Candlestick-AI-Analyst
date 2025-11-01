@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Candlestick AI Analystম",
+  "description": "An AI-powered tool that analyzes images of financial candlestick charts to provide technical analysis, pattern recognition, and market predictions.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
