@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import CameraView from './components/CameraView';
 import { AnalysisScreen } from './components/AnalysisScreen';
+import { LandingScreen } from './components/LandingScreen';
 import { ChartAnalysis, TradingPlatform, ChartTimeframe } from './types';
 import { analyzeChart } from './services/geminiService';
 import { fileToBase64 } from './utils/imageUtils';
 
-type AppState = 'camera' | 'analyzing' | 'result';
+type AppState = 'landing' | 'camera' | 'analyzing' | 'result';
 
 function App() {
-  const [appState, setAppState] = useState<AppState>('camera');
+  const [appState, setAppState] = useState<AppState>('landing');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<ChartAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -52,10 +53,16 @@ function App() {
       setError(null);
   }
 
+  const handleBackToLanding = () => {
+    setAppState('landing');
+  }
+
   const renderContent = () => {
     switch (appState) {
+      case 'landing':
+        return <LandingScreen onStartStatic={() => setAppState('camera')} onStartLive={() => {}} />;
       case 'camera':
-        return <CameraView onAnalyze={handleAnalyze} />;
+        return <CameraView onAnalyze={handleAnalyze} onBack={handleBackToLanding} />;
       case 'analyzing':
       case 'result':
         if (!imageUrl) {
@@ -74,7 +81,7 @@ function App() {
           />
         );
       default:
-        return <CameraView onAnalyze={handleAnalyze} />;
+        return <LandingScreen onStartStatic={() => setAppState('camera')} onStartLive={() => {}} />;
     }
   };
 

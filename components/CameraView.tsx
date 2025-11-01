@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback, ChangeEvent } from 'react';
 import Webcam from 'react-webcam';
 import { ChartTimeframe, TradingPlatform } from '../types';
-import { CameraIcon, UploadIcon } from './IconComponents';
+import { BackIcon, CameraIcon, UploadIcon } from './IconComponents';
 
 interface CameraViewProps {
   onAnalyze: (
@@ -9,6 +9,7 @@ interface CameraViewProps {
     platform: TradingPlatform,
     timeframe: ChartTimeframe
   ) => void;
+  onBack: () => void;
 }
 
 const videoConstraints = {
@@ -17,7 +18,7 @@ const videoConstraints = {
   facingMode: 'user', // Default to front camera, more common for desktop
 };
 
-export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze }) => {
+export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onBack }) => {
   const webcamRef = useRef<Webcam>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [platform, setPlatform] = useState<TradingPlatform>('General');
@@ -60,7 +61,14 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4 sm:p-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4 sm:p-6 relative">
+        <button
+          onClick={onBack}
+          className="absolute top-4 left-4 p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-75 transition z-10"
+          aria-label="Go back"
+        >
+          <BackIcon className="w-6 h-6" />
+        </button>
         <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold">
             AI<span className="text-cyan-400"> Trading</span> Analyst
@@ -111,8 +119,19 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze }) => {
                                 videoConstraints={videoConstraints}
                                 className="w-full h-full object-cover"
                                 onUserMediaError={(err) => {
-                                  console.error(err);
-                                  setError('Could not access camera. Please check permissions.');
+                                  console.error('onUserMediaError:', err);
+                                  // The err object is a DOMException.
+                                  if (err instanceof DOMException) {
+                                      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                                          setError('Camera permission was denied. Please allow camera access in your browser settings to use this feature.');
+                                      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                                          setError('No camera found. Please ensure a camera is connected and enabled.');
+                                      } else {
+                                           setError(`Could not access camera: ${err.message}. Please check permissions and ensure it is not in use by another application.`);
+                                      }
+                                  } else {
+                                      setError('An unknown error occurred while trying to access the camera.');
+                                  }
                                   setIsCameraOn(false);
                                 }}
                             />
