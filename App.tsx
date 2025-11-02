@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CameraView from './components/CameraView';
 import { AnalysisScreen } from './components/AnalysisScreen';
 import { LandingScreen } from './components/LandingScreen';
-import LiveAnalysisView from './components/LiveAnalysisView';
 import { ChartAnalysis, TradingPlatform, ChartTimeframe } from './types';
 import { analyzeChart } from './services/geminiService';
 import { fileToBase64 } from './utils/imageUtils';
+import { translations, Language, Translation } from './translations';
 
-type AppState = 'landing' | 'camera' | 'analyzing' | 'result' | 'live';
+type AppState = 'landing' | 'camera' | 'analyzing' | 'result';
+type Theme = 'light' | 'dark';
 
 function App() {
   const [appState, setAppState] = useState<AppState>('landing');
@@ -15,6 +16,33 @@ function App() {
   const [analysisResult, setAnalysisResult] = useState<ChartAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [analysisParams, setAnalysisParams] = useState<{ platform: TradingPlatform; timeframe: ChartTimeframe }>({ platform: 'General', timeframe: '5m' });
+  
+  const [theme, setTheme] = useState<Theme>(() => {
+    const savedTheme = localStorage.getItem('theme') as Theme | null;
+    if (savedTheme) return savedTheme;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  const [language, setLanguage] = useState<Language>(() => {
+    return (localStorage.getItem('language') as Language) || 'en';
+  });
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('language', language);
+  }, [language]);
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+  };
+
+  const t: Translation = translations[language];
 
   const handleAnalyze = async (
     file: File,
@@ -58,16 +86,20 @@ function App() {
     setAppState('landing');
   }
 
-  const handleStartLive = () => {
-    setAppState('live');
-  }
+  const commonProps = {
+    t,
+    theme,
+    toggleTheme,
+    language,
+    setLanguage,
+  };
 
   const renderContent = () => {
     switch (appState) {
       case 'landing':
-        return <LandingScreen onStartStatic={() => setAppState('camera')} onStartLive={handleStartLive} />;
+        return <LandingScreen onStartStatic={() => setAppState('camera')} {...commonProps} />;
       case 'camera':
-        return <CameraView onAnalyze={handleAnalyze} onBack={handleBackToLanding} />;
+        return <CameraView onAnalyze={handleAnalyze} onBack={handleBackToLanding} {...commonProps} />;
       case 'analyzing':
       case 'result':
         if (!imageUrl) {
@@ -83,12 +115,11 @@ function App() {
             onReset={handleBackToCamera}
             platform={analysisParams.platform}
             timeframe={analysisParams.timeframe}
+            t={t}
           />
         );
-      case 'live':
-        return <LiveAnalysisView onBack={handleBackToLanding} />;
       default:
-        return <LandingScreen onStartStatic={() => setAppState('camera')} onStartLive={handleStartLive} />;
+        return <LandingScreen onStartStatic={() => setAppState('camera')} {...commonProps} />;
     }
   };
 
