@@ -15,13 +15,14 @@ interface AnalysisScreenProps {
 }
 
 const PredictionIcon: React.FC<{ prediction: 'Up' | 'Down' | 'Sideways' }> = ({ prediction }) => {
+  const iconClasses = "w-8 h-8 md:w-10";
   switch (prediction) {
     case 'Up':
-      return <ArrowUpIcon className="w-12 h-12 text-green-500" />;
+      return <ArrowUpIcon className={`${iconClasses} text-green-500`} />;
     case 'Down':
-      return <ArrowDownIcon className="w-12 h-12 text-red-500" />;
+      return <ArrowDownIcon className={`${iconClasses} text-red-500`} />;
     case 'Sideways':
-      return <MinusIcon className="w-12 h-12 text-yellow-500" />;
+      return <MinusIcon className={`${iconClasses} text-yellow-500`} />;
     default:
       return null;
   }
@@ -84,16 +85,26 @@ export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ imageUrl, result
 
         {result && !isLoading && (
           <div className="space-y-6">
-            <div className={`p-4 rounded-lg border ${getPredictionColorClasses(result.prediction)}`}>
-              <div className="flex items-center gap-4">
-                <PredictionIcon prediction={result.prediction} />
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t.predictionLabel}</h3>
-                  <p className="text-4xl font-bold">{result.prediction}</p>
+            <div className={`p-3 md:p-4 rounded-lg border ${getPredictionColorClasses(result.prediction)}`}>
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <PredictionIcon prediction={result.prediction} />
+                  <div>
+                    <h3 className="text-xs md:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t.predictionLabel}</h3>
+                    <p className="text-2xl md:text-3xl font-bold">{result.prediction}</p>
+                  </div>
                 </div>
-                <div className="ml-auto text-right">
-                  <h3 className="text-lg font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t.confidenceLabel}</h3>
-                  <p className="text-4xl font-bold">{result.confidence}<span className="text-2xl opacity-70">%</span></p>
+
+                {result.prediction !== 'Sideways' && result.predictedCandles && (
+                    <div className="text-center flex-shrink-0">
+                      <h3 className="text-xs md:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t.predictedCandlesLabel}</h3>
+                      <p className="text-2xl md:text-3xl font-bold">{result.predictedCandles}</p>
+                    </div>
+                )}
+                
+                <div className="text-right flex-shrink-0">
+                  <h3 className="text-xs md:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t.confidenceLabel}</h3>
+                  <p className="text-2xl md:text-3xl font-bold">{result.confidence}<span className="text-lg md:text-xl opacity-70">%</span></p>
                 </div>
               </div>
             </div>

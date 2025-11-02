@@ -18,7 +18,7 @@ export const analyzeChart = async (
   platform: TradingPlatform,
   timeframe: ChartTimeframe
 ): Promise<ChartAnalysis> => {
-  const prompt = `You are a professional technical analyst specializing in the ${platform} trading platform. Analyze the provided candlestick chart image which represents a ${timeframe} timeframe. Identify key candlestick patterns, predict the most likely next market direction (Up, Down, or Sideways), provide a confidence percentage for your prediction, and give a detailed analysis explaining your reasoning. Respond in JSON format according to the provided schema.`;
+  const prompt = `You are a professional technical analyst specializing in the ${platform} trading platform. Analyze the provided candlestick chart image which represents a ${timeframe} timeframe. Identify key candlestick patterns, predict the most likely next market direction (Up, Down, or Sideways), provide a confidence percentage for your prediction, predict for how many candles this trend is likely to continue (e.g., '1-2 candles', '3 candles'), and give a detailed analysis explaining your reasoning. Respond in JSON format according to the provided schema.`;
 
   const imagePart = {
     inlineData: {
@@ -54,8 +54,12 @@ export const analyzeChart = async (
         type: Type.STRING, 
         description: "A detailed explanation of the reasoning behind the prediction and patterns identified." 
       },
+      predictedCandles: {
+        type: Type.STRING,
+        description: "The predicted number of candles for which the trend will continue, e.g., '1-2 candles'."
+      },
     },
-    required: ['prediction', 'confidence', 'patterns', 'analysis'],
+    required: ['prediction', 'confidence', 'patterns', 'analysis', 'predictedCandles'],
   };
 
   try {

@@ -6,4 +6,5 @@ export interface ChartAnalysis {
   confidence: number;
   patterns: string[];
   analysis: string;
+  predictedCandles: string;
 }
