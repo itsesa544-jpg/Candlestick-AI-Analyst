@@ -51,7 +51,7 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onBack }) => 
             </p>
         </div>
 
-        <div className="mt-8 p-6 bg-white/75 rounded-xl border border-gray-200 w-full max-w-lg shadow-lg">
+        <div className="mt-8 p-6 bg-white/75 rounded-xl border border-gray-200 w-full max-w-2xl shadow-lg">
             <h2 className="text-xl font-bold mb-4 text-center text-cyan-700">1. Chart Settings</h2>
             {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -78,7 +78,7 @@ export const CameraView: React.FC<CameraViewProps> = ({ onAnalyze, onBack }) => 
             </div>
         </div>
 
-        <div className="mt-6 w-full max-w-lg">
+        <div className="mt-6 w-full max-w-2xl">
             <h2 className="text-xl font-bold mb-4 text-center text-cyan-700">2. Upload Chart Image</h2>
             <div className="flex flex-col items-center justify-center h-full p-6 bg-white/75 rounded-xl border border-gray-200 shadow-lg">
                 <p className="text-center text-gray-500 mb-4">Select an image file from your device.</p>

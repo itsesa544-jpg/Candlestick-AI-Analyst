@@ -50,9 +50,9 @@ export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ imageUrl, result
       </div>
 
       {/* Analysis Panel */}
-      <div className="w-full md:w-1/2 h-2/3 md:h-full flex flex-col p-6 overflow-y-auto bg-white">
+      <div className="w-full md:w-1/2 h-2/3 md:h-full flex flex-col p-6 lg:p-8 overflow-y-auto bg-white">
         <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-cyan-600">AI Analysis</h2>
+            <h2 className="text-2xl lg:text-3xl font-bold text-cyan-600">AI Analysis</h2>
             <div className="flex gap-2">
                 <span className="bg-gray-200 text-cyan-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">{platform}</span>
                 <span className="bg-gray-200 text-cyan-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">{timeframe}</span>
@@ -107,7 +107,7 @@ export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ imageUrl, result
 
             <div>
               <h3 className="text-lg font-semibold text-gray-500 uppercase tracking-wide">Detailed Analysis</h3>
-              <p className="text-gray-700 mt-2 whitespace-pre-wrap font-mono text-sm leading-relaxed">{result.analysis}</p>
+              <p className="text-gray-700 mt-2 whitespace-pre-wrap font-mono text-sm md:text-base leading-relaxed">{result.analysis}</p>
             </div>
             
             <div className="!mt-8 border-t border-yellow-600/30 pt-4 text-center">
